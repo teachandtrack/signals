@@ -11,12 +11,16 @@ from datetime import datetime
 # Add apps/api to path so we can import modules when running as a script
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from database import SessionLocal
+from database import SessionLocal, engine
+import models
 from ingestion.engine import IngestionEngine
 from scoring.builder import SignalBuilder
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
+
+# Ensure tables exist
+models.Base.metadata.create_all(bind=engine)
 
 
 def run_ingestion():
