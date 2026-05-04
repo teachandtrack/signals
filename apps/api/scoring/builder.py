@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from models import RawDocument, Signal, SignalSource, SignalStatus, ComplianceStatus
 from scoring.extractor import EntityExtractor
 from scoring.framework import ScoringFramework
+from scoring.llm import GeminiSynthesizer
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +46,17 @@ class SignalBuilder:
         source_credibility = doc.source.credibility_score if doc.source else 0.5
         scores = ScoringFramework.calculate_scores(doc.content, source_credibility)
         
-        # 3. Create Signal
-        # A real system would cluster this (e.g., check if a similar signal exists today)
-        content_preview = doc.content[:500] + "..." if doc.content and len(doc.content) > 500 else doc.content
+        # 3. LLM Synthesis using Gemini
+        synthesis = GeminiSynthesizer.synthesize_signal(doc.content or "")
         
+        # 4. Create Signal
+        # A real system would cluster this (e.g., check if a similar signal exists today)
         signal = Signal(
             title=doc.title or "Untitled Signal",
-            summary=content_preview,
+            summary=synthesis["summary"],
+            llm_bull_case=synthesis["bull_case"],
+            llm_bear_case=synthesis["bear_case"],
+            sentiment=synthesis["sentiment"],
             status=SignalStatus.PENDING,
             compliance_status=doc.compliance_status,
             score_novelty=scores["novelty"],

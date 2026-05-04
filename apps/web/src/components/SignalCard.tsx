@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import AiCouncil from "./AiCouncil";
+
 
 // Add a simple fade-in-up animation to globals via tailwind inline config or just use the class
 export default function SignalCard({ signal }: { signal: any }) {
-  const [showCouncil, setShowCouncil] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
 
   // Determine gradient color based on total score
   const scoreColor = 
@@ -109,10 +109,10 @@ export default function SignalCard({ signal }: { signal: any }) {
         {/* Action Buttons */}
         <div className="flex gap-2 w-full md:w-auto shrink-0">
           <button 
-            onClick={() => setShowCouncil(!showCouncil)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${showCouncil ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-400' : 'bg-zinc-800 border-transparent text-zinc-300 hover:border-indigo-500/20'}`}
+            onClick={() => setShowAnalysis(!showAnalysis)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${showAnalysis ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-400' : 'bg-zinc-800 border-transparent text-zinc-300 hover:border-indigo-500/20'}`}
           >
-            🤖 AI Council
+            ✨ Gemini Analysis
           </button>
           <button className="flex-1 md:flex-none px-6 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40">
             Review
@@ -120,9 +120,41 @@ export default function SignalCard({ signal }: { signal: any }) {
         </div>
       </div>
 
-      {/* AI Council Dropdown */}
-      {showCouncil && (
-        <AiCouncil signalContext={signal} />
+      {/* Gemini Analysis Dropdown */}
+      {showAnalysis && (
+        <div className="pt-4 border-t border-zinc-800/50 mt-2 flex flex-col gap-4 animate-fade-in-up">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xl">✨</span>
+            <h4 className="text-white font-medium text-sm">Gemini AI Synthesis</h4>
+            <span className={`ml-auto text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${
+              signal.sentiment === 'bullish' ? 'bg-emerald-500/20 text-emerald-400' :
+              signal.sentiment === 'bearish' ? 'bg-red-500/20 text-red-400' :
+              'bg-amber-500/20 text-amber-400'
+            }`}>
+              {signal.sentiment || 'NEUTRAL'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-zinc-900/50 rounded-lg p-4 border border-emerald-500/10 hover:border-emerald-500/20 transition-colors">
+              <h5 className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">
+                <span className="text-emerald-500">📈</span> Bull Case
+              </h5>
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                {signal.llm_bull_case || "No bull case generated."}
+              </p>
+            </div>
+            
+            <div className="bg-zinc-900/50 rounded-lg p-4 border border-red-500/10 hover:border-red-500/20 transition-colors">
+              <h5 className="text-red-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">
+                <span className="text-red-500">📉</span> Bear Case
+              </h5>
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                {signal.llm_bear_case || "No bear case generated."}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
