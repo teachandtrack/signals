@@ -46,31 +46,60 @@ import asyncio
 from scoring.builder import SignalBuilder
 from database import SessionLocal
 
+from ingestion.engine import IngestionEngine
+
 async def slow_analysis_worker():
     """Background worker that processes one raw signal every 5 minutes."""
     while True:
         try:
-            logger.info("Background Worker: Checking for signals to analyze...")
+            logger.info("Background Worker (Analysis): Checking for signals to analyze...")
             db = SessionLocal()
             try:
                 builder = SignalBuilder(db)
                 success = builder.analyze_one_skipped()
                 if success:
-                    logger.info("Background Worker: Successfully analyzed one signal.")
+                    logger.info("Background Worker (Analysis): Successfully analyzed one signal.")
                 else:
-                    logger.info("Background Worker: No signals to analyze.")
+                    logger.info("Background Worker (Analysis): No signals to analyze.")
             finally:
                 db.close()
         except Exception as e:
-            logger.error(f"Background Worker Error: {e}")
+            logger.error(f"Background Worker (Analysis) Error: {e}")
         
         # Wait for 5 minutes before next run (300 seconds)
         await asyncio.sleep(300)
 
+async def ingestion_worker():
+    """Background worker that runs ingestion and signal generation every 2 hours."""
+    while True:
+        try:
+            logger.info("Background Worker (Ingestion): Starting run...")
+            db = SessionLocal()
+            try:
+                # 1. Ingest new documents
+                engine = IngestionEngine(db)
+                engine.run()
+                
+                # 2. Build signals from new documents
+                builder = SignalBuilder(db)
+                builder.build_signals_from_unprocessed()
+                
+                logger.info("Background Worker (Ingestion): Run complete.")
+            finally:
+                db.close()
+        except Exception as e:
+            logger.error(f"Background Worker (Ingestion) Error: {e}")
+        
+        # Run every 2 hours (7200 seconds)
+        # Using 2 hours to avoid hitting rate limits on free-tier source APIs
+        await asyncio.sleep(7200)
+
 @app.on_event("startup")
 async def startup_event():
-    # Start the background worker
+    # Start the background workers
     asyncio.create_task(slow_analysis_worker())
+    asyncio.create_task(ingestion_worker())
+
 
 
 
