@@ -81,7 +81,7 @@ import { cookies } from "next/headers";
 
 export async function login(password: string) {
   const correctPassword = process.env.SIGINT_API_KEY;
-  
+
   if (password === correctPassword) {
     const cookieStore = await cookies();
     cookieStore.set("sigint_session", "true", {
@@ -92,7 +92,7 @@ export async function login(password: string) {
     });
     return true;
   }
-  
+
   return false;
 }
 
