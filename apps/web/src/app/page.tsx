@@ -90,6 +90,7 @@ const MOCK_SIGNALS = [
 
 import MarketPulse from "@/components/MarketPulse";
 
+import Link from "next/link";
 import { getSignals } from "./actions";
 
 export default function QueuePage() {
@@ -143,9 +144,15 @@ export default function QueuePage() {
         </div>
         
         <div className="flex gap-2">
+          <Link 
+            href="/watchlist"
+            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-lg text-sm font-medium transition-colors border border-zinc-700"
+          >
+            👁️ Watchlist
+          </Link>
           <button 
             onClick={() => alert("Filter functionality coming soon.")}
-            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-700"
           >
             Filter
           </button>

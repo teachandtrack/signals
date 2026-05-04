@@ -64,6 +64,43 @@ def get_signal_queue(
     return [schemas.SignalOut.from_orm_with_scores(s) for s in signals]
 
 
+@app.get("/signals/watchlist", response_model=list[schemas.SignalOut], tags=["Signals"])
+def get_watchlist(
+    db: Session = Depends(get_db),
+    _key: str = Depends(get_api_key)
+):
+    """Return signals that have been moved to the watchlist."""
+    signals = (
+        db.query(models.Signal)
+        .filter(models.Signal.status == models.SignalStatus.REVIEWED)
+        .join(models.Review)
+        .filter(models.Review.decision == "watchlist")
+        .order_by(models.Signal.updated_at.desc())
+        .all()
+    )
+    return [schemas.SignalOut.from_orm_with_scores(s) for s in signals]
+
+
+@app.get("/signals/{signal_id}/compliance", response_model=dict, tags=["Signals"])
+def get_compliance_audit(signal_id: int, db: Session = Depends(get_db), _key: str = Depends(get_api_key)):
+    """Return a detailed compliance audit for a signal."""
+    signal = db.query(models.Signal).filter(models.Signal.id == signal_id).first()
+    if not signal:
+        raise HTTPException(status_code=404, detail="Signal not found")
+        
+    return {
+        "status": signal.compliance_status,
+        "score": signal.score_safety,
+        "checks": [
+            {"name": "Source Verification", "status": "PASS" if signal.source.credibility_score > 0.6 else "WARN"},
+            {"name": "Sentiment Alignment", "status": "PASS" if signal.sentiment in ["bullish", "bearish"] else "WARN"},
+            {"name": "Confidence Threshold", "status": "PASS" if signal.score_total > 0.7 else "FAIL"},
+            {"name": "Evidence Strength", "status": "PASS" if signal.score_evidence > 0.5 else "WARN"}
+        ],
+        "timestamp": signal.updated_at
+    }
+
+
 @app.get("/signals/{signal_id}", response_model=schemas.SignalOut, tags=["Signals"])
 def get_signal(signal_id: int, db: Session = Depends(get_db), _key: str = Depends(get_api_key)):
     signal = db.query(models.Signal).filter(models.Signal.id == signal_id).first()
