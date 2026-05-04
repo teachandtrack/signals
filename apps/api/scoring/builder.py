@@ -2,7 +2,8 @@ import logging
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
-from models import RawDocument, Signal, SignalSource, SignalStatus, ComplianceStatus
+from models import RawDocument, Signal, SignalSource, SignalStatus, ComplianceStatus, SignalTicker
+import models
 from scoring.extractor import EntityExtractor
 from scoring.framework import ScoringFramework
 from scoring.llm import GeminiSynthesizer
@@ -79,8 +80,16 @@ class SignalBuilder:
         )
         self.db.add(signal_source)
         
-        # Note: We would also link Tickers to the Signal here by creating SignalTicker records
-        # using the `tickers` array extracted earlier.
+        # 5. Link Tickers to Signal
+        for symbol in tickers:
+            ticker = self.db.query(models.Ticker).filter(models.Ticker.symbol == symbol).first()
+            if ticker:
+                signal_ticker = SignalTicker(
+                    signal_id=signal.id,
+                    company_id=ticker.company_id,
+                    direction="long" if synthesis["sentiment"] == "bullish" else ("short" if synthesis["sentiment"] == "bearish" else "neutral")
+                )
+                self.db.add(signal_ticker)
         
         logger.info(f"Generated new Signal ID {signal.id} (Score: {scores['total']})")
         

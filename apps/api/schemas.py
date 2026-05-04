@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 from models import ComplianceStatus, SignalStatus, SourceType
+from scoring.predictor import TradePredictor
 
 
 # ── Base ──────────────────────────────────────────────────────────────────────
@@ -41,6 +42,15 @@ class SourceOut(TimestampSchema):
     credibility_score: float
     is_active: bool
 
+class TradePlan(BaseModel):
+    ticker: str
+    action: str
+    current_price: float
+    target_price: float
+    stop_loss: float
+    confidence: str
+    horizon: str
+
 
 # ── Signals ───────────────────────────────────────────────────────────────────
 class SignalScores(BaseModel):
@@ -63,10 +73,32 @@ class SignalOut(TimestampSchema):
     status: SignalStatus
     compliance_status: ComplianceStatus
     scores: SignalScores
+    tickers: Optional[List[str]] = []
+    trade_plan: Optional[TradePlan] = None
     expires_at: Optional[datetime]
 
     @classmethod
     def from_orm_with_scores(cls, signal):
+        # Extract tickers from signal.tickers
+        # signal.tickers is a list of SignalTicker objects
+        # SignalTicker has company relationship, Company has tickers relationship
+        ticker_symbols = []
+        for st in signal.tickers:
+            for t in st.company.tickers:
+                if t.symbol not in ticker_symbols:
+                    ticker_symbols.append(t.symbol)
+
+        trade_plan = None
+        if ticker_symbols:
+            plan_data = TradePredictor.generate_trade_plan(
+                tickers=ticker_symbols,
+                total_score=signal.score_total,
+                evidence_score=signal.score_evidence,
+                sentiment=signal.sentiment.upper() if signal.sentiment else "NEUTRAL"
+            )
+            if plan_data:
+                trade_plan = TradePlan(**plan_data)
+
         data = {
             "id": signal.id,
             "title": signal.title,
@@ -79,6 +111,8 @@ class SignalOut(TimestampSchema):
             "expires_at": signal.expires_at,
             "created_at": signal.created_at,
             "updated_at": signal.updated_at,
+            "tickers": ticker_symbols,
+            "trade_plan": trade_plan,
             "scores": SignalScores(
                 novelty=signal.score_novelty,
                 relevance=signal.score_relevance,

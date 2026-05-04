@@ -1,6 +1,6 @@
 import os
 import logging
-import google.generativeai as genai
+from google import genai
 import json
 
 logger = logging.getLogger(__name__)
@@ -8,10 +8,9 @@ logger = logging.getLogger(__name__)
 # Configure Gemini
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
+    client = genai.Client(api_key=api_key)
 else:
-    model = None
+    client = None
     logger.warning("GEMINI_API_KEY is not set. LLM synthesis will be disabled.")
 
 class GeminiSynthesizer:
@@ -21,7 +20,7 @@ class GeminiSynthesizer:
         Takes raw document content and uses Gemini Flash to generate
         a summary, bull case, bear case, and sentiment.
         """
-        if not model:
+        if not client:
             return {
                 "summary": content[:500] + "...",
                 "bull_case": "LLM synthesis disabled. Set GEMINI_API_KEY.",
@@ -44,7 +43,10 @@ class GeminiSynthesizer:
         """
         
         try:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt
+            )
             text = response.text
             
             # Clean up markdown JSON block if present
@@ -65,7 +67,7 @@ class GeminiSynthesizer:
             logger.error(f"Failed to synthesize signal with Gemini: {e}")
             return {
                 "summary": content[:500] + "...",
-                "bull_case": "Analysis failed due to an error.",
-                "bear_case": "Analysis failed due to an error.",
+                "bull_case": f"Analysis failed due to an error: {e}",
+                "bear_case": f"Analysis failed due to an error: {e}",
                 "sentiment": "neutral"
             }
