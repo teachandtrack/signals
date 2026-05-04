@@ -88,6 +88,8 @@ const MOCK_SIGNALS = [
   }
 ];
 
+import MarketPulse from "@/components/MarketPulse";
+
 export default function QueuePage() {
   const [signals, setSignals] = useState(MOCK_SIGNALS);
   const [loading, setLoading] = useState(true);
@@ -129,8 +131,15 @@ export default function QueuePage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-5xl mx-auto space-y-10 pb-12">
+      
+      {/* Market Pulse Section */}
+      <section className="space-y-4">
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest px-1">Market Pulse</h3>
+        <MarketPulse />
+      </section>
+
+      <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-white mb-1">Awaiting Review</h2>
           <p className="text-zinc-400 text-sm">You have {signals.length} high-confidence signals to process.</p>
