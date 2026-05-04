@@ -18,18 +18,22 @@ class TradePredictor:
         primary_ticker = tickers[0]
         
         try:
-            # Fetch real-time price using yfinance
+            # Use fast_info for near-instant price retrieval
             stock = yf.Ticker(primary_ticker)
-            history = stock.history(period="1d")
+            # Try fast_info first as it's much faster than history()
+            current_price = stock.fast_info.get('last_price') or stock.fast_info.get('lastPrice')
             
-            if history.empty:
-                current_price = 100.0 # Fallback mock price
-            else:
-                current_price = float(history['Close'].iloc[-1])
+            if not current_price:
+                # Fallback to history only if fast_info fails
+                history = stock.history(period="1d")
+                if not history.empty:
+                    current_price = float(history['Close'].iloc[-1])
+                else:
+                    current_price = 100.0
                 
         except Exception as e:
-            logger.warning(f"Failed to fetch price for {primary_ticker}: {e}")
-            current_price = 100.0 # Fallback mock price
+            logger.warning(f"Market data fetch failed for {primary_ticker}: {e}")
+            current_price = 100.0 # Fallback mock price to ensure API keeps moving
             
         # Prediction Logic based on Signal Scores & Sentiment
         # If total_score is high and sentiment is BULLISH -> BUY
