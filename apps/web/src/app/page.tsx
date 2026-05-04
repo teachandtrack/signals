@@ -91,26 +91,37 @@ const MOCK_SIGNALS = [
 export default function QueuePage() {
   const [signals, setSignals] = useState(MOCK_SIGNALS);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchSignals = async () => {
+    setIsRefreshing(true);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:10000";
+      const res = await fetch(`${apiUrl}/signals/queue`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length > 0) {
+          setSignals(data);
+        } else {
+          // Keep mock data visible for demonstration if DB is empty
+          console.log("No real signals found, showing mock data.");
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch real signals:", err);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    // In production, this would fetch from http://localhost:8000/signals/queue
-    // fetch("http://localhost:8000/signals/queue")
-    //   .then(res => res.json())
-    //   .then(data => setSignals(data))
-    //   .catch(err => console.error(err))
-    //   .finally(() => setLoading(false));
-    
-    // Simulate loading for the rich effect
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 800);
-    
-    return () => clearTimeout(timer);
+    fetchSignals();
   }, []);
 
-  if (loading) {
+  if (loading && signals.length === 0) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
+      <div className="w-full h-full flex flex-col items-center justify-center space-y-4 pt-20">
         <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
         <p className="text-zinc-400 font-medium animate-pulse">Scanning signal queue...</p>
       </div>
@@ -126,25 +137,39 @@ export default function QueuePage() {
         </div>
         
         <div className="flex gap-2">
-          <button className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors">
+          <button 
+            onClick={() => alert("Filter functionality coming soon.")}
+            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors"
+          >
             Filter
           </button>
-          <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40">
-            Refresh Feed
+          <button 
+            onClick={fetchSignals}
+            disabled={isRefreshing}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 disabled:opacity-50"
+          >
+            {isRefreshing ? 'Refreshing...' : 'Refresh Feed'}
           </button>
         </div>
       </div>
 
       <div className="space-y-6">
-        {signals.map((signal, idx) => (
-          <div 
-            key={signal.id} 
-            className="opacity-0 animate-[fade-in-up_0.5s_ease-out_forwards]"
-            style={{ animationDelay: `${idx * 150}ms` }}
-          >
-            <SignalCard signal={signal} />
+        {signals.length === 0 ? (
+          <div className="text-center py-20 bg-zinc-900/50 rounded-xl border border-zinc-800/50">
+            <h3 className="text-xl text-zinc-300 font-semibold mb-2">No Signals Found</h3>
+            <p className="text-zinc-500 text-sm">The signal extraction pipeline hasn't processed any documents yet.</p>
           </div>
-        ))}
+        ) : (
+          signals.map((signal, idx) => (
+            <div 
+              key={signal.id} 
+              className="opacity-0 animate-[fade-in-up_0.5s_ease-out_forwards]"
+              style={{ animationDelay: `${idx * 150}ms` }}
+            >
+              <SignalCard signal={signal} />
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

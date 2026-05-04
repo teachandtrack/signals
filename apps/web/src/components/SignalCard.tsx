@@ -114,7 +114,10 @@ export default function SignalCard({ signal }: { signal: any }) {
           >
             ✨ Gemini Analysis
           </button>
-          <button className="flex-1 md:flex-none px-6 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40">
+          <button 
+            onClick={() => alert(`Review process initiated for ${signal.title}`)}
+            className="flex-1 md:flex-none px-6 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40"
+          >
             Review
           </button>
         </div>
