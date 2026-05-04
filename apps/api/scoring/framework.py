@@ -19,24 +19,24 @@ class ScoringFramework:
         text_lower = text.lower()
         
         # 1. Relevance: Mentions of specific semiconductor keywords
-        keywords = ["semiconductor", "chip", "foundry", "wafer", "gpu", "ai", "tsmc", "nvidia"]
-        relevance = min(1.0, sum(1 for k in keywords if k in text_lower) * 0.2)
+        keywords = ["semiconductor", "chip", "foundry", "wafer", "gpu", "ai", "tsmc", "nvidia", "intel", "amd", "asml", "fab", "lithography"]
+        relevance = min(1.0, sum(1 for k in keywords if k in text_lower) * 0.25)
         
-        # 2. Novelty: Stub (assume 0.5 for now)
-        novelty = 0.5
+        # 2. Novelty: Based on article length and density of information (stub)
+        novelty = 0.8 if len(text) > 1000 else 0.5
         
         # 3. Timing: Are there forward-looking statements?
-        timing_words = ["expect", "quarter", "forecast", "upcoming", "tomorrow", "guidance"]
-        timing = 0.8 if any(w in text_lower for w in timing_words) else 0.4
+        timing_words = ["expect", "quarter", "forecast", "upcoming", "tomorrow", "guidance", "plans", "roadmap"]
+        timing = 0.9 if any(w in text_lower for w in timing_words) else 0.5
         
         # 4. Evidence: Mentions of numbers, reports, or financials
-        evidence = 0.7 if any(char.isdigit() for char in text) else 0.3
+        evidence = 0.8 if sum(char.isdigit() for char in text) > 5 else 0.4
         
-        # 5. Tradability: Stub
-        tradability = 0.6
+        # 5. Tradability: Higher if multiple tickers found (updated in builder)
+        tradability = 0.7
         
         # 6. Source Safety: Directly from the Source's credibility score
-        safety = source_credibility
+        safety = source_credibility or 0.5
         
         # Weighted Master Score
         # Relevance and Evidence are heavily weighted for Signal Quality

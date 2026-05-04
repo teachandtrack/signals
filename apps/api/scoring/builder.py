@@ -41,14 +41,23 @@ class SignalBuilder:
 
     def process_document(self, doc: RawDocument):
         # 1. Extract Entities
-        tickers = EntityExtractor.extract_tickers(doc.content)
+        tickers = EntityExtractor.extract_tickers(f"{doc.title} {doc.content}", db_session=self.db)
         
         # 2. Calculate Scores
         source_credibility = doc.source.credibility_score if doc.source else 0.5
         scores = ScoringFramework.calculate_scores(doc.content, source_credibility)
         
-        # 3. LLM Synthesis using Gemini
-        synthesis = GeminiSynthesizer.synthesize_signal(doc.content or "")
+        # 3. LLM Synthesis using Gemini (only for high-score signals to save quota)
+        # Threshold 0.8 based on user request ("above 8")
+        if scores["total"] >= 0.8:
+            synthesis = GeminiSynthesizer.synthesize_signal(doc.content or "")
+        else:
+            synthesis = {
+                "summary": f"Signal score ({scores['total']:.2f}) below analysis threshold (0.80). AI synthesis skipped to preserve quota.",
+                "bull_case": "N/A - Analysis skipped",
+                "bear_case": "N/A - Analysis skipped",
+                "sentiment": "neutral"
+            }
         
         # 4. Create Signal
         # A real system would cluster this (e.g., check if a similar signal exists today)

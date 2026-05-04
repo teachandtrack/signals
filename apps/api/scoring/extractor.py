@@ -9,12 +9,20 @@ class EntityExtractor:
     """
     
     @staticmethod
-    def extract_tickers(text: str) -> List[str]:
+    def extract_tickers(text: str, db_session=None) -> List[str]:
         if not text:
             return []
             
-        # Simple regex to find $TICKER patterns
+        # 1. Naive regex for $TICKER
         matches = re.findall(r'\$([A-Z]{1,5})', text)
         
-        # In a real system, we'd also match company names against our Company DB table.
+        # 2. Match company names from DB if session is provided
+        if db_session:
+            from models import Company
+            companies = db_session.query(Company).all()
+            for company in companies:
+                if company.name.lower() in text.lower():
+                    for t in company.tickers:
+                        matches.append(t.symbol)
+        
         return list(set(matches))
