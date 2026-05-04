@@ -1,5 +1,7 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 export async function getSignals() {
   const cookieStore = await cookies();
   if (!cookieStore.get("sigint_session")) return [];
@@ -31,8 +33,6 @@ export async function getWatchlist() {
   const apiKey = process.env.SIGINT_API_KEY;
 
   try {
-    // We'll use a new endpoint or filter the existing one
-    // For now, let's assume we can fetch signals by status
     const res = await fetch(`${apiUrl}/signals/watchlist`, {
       headers: {
         "X-API-Key": apiKey || "",
@@ -67,6 +67,7 @@ export async function analyzeSignal(signalId: number) {
     return false;
   }
 }
+
 export async function updateSignalStatus(signalId: number, decision: "act" | "dismiss" | "watchlist", notes: string = "") {
   const cookieStore = await cookies();
   if (!cookieStore.get("sigint_session")) return false;
@@ -89,22 +90,21 @@ export async function updateSignalStatus(signalId: number, decision: "act" | "di
     return false;
   }
 }
-import { cookies } from "next/headers";
 
 export async function login(password: string) {
-  const correctPassword = process.env.SIGINT_API_KEY;
-
+  const correctPassword = process.env.DASHBOARD_PASSWORD;
+  
   if (password === correctPassword) {
     const cookieStore = await cookies();
     cookieStore.set("sigint_session", "true", {
       httpOnly: true,
-      secure: process.env.NODE_VALUE === "production",
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24 * 7, // 1 week
     });
     return true;
   }
-
+  
   return false;
 }
 
