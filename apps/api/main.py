@@ -17,7 +17,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Tighten in production to Vercel domain
+    allow_origins=["https://sigint-web.onrender.com", "http://localhost:3000"],  # Updated for Render deployment
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
