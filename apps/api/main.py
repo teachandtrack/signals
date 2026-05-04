@@ -1,6 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 from sqlalchemy.orm import Session
+ 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 from database import get_db, engine
 import models
@@ -37,6 +41,37 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+import asyncio
+from scoring.builder import SignalBuilder
+from database import SessionLocal
+
+async def slow_analysis_worker():
+    """Background worker that processes one raw signal every 5 minutes."""
+    while True:
+        try:
+            logger.info("Background Worker: Checking for signals to analyze...")
+            db = SessionLocal()
+            try:
+                builder = SignalBuilder(db)
+                success = builder.analyze_one_skipped()
+                if success:
+                    logger.info("Background Worker: Successfully analyzed one signal.")
+                else:
+                    logger.info("Background Worker: No signals to analyze.")
+            finally:
+                db.close()
+        except Exception as e:
+            logger.error(f"Background Worker Error: {e}")
+        
+        # Wait for 5 minutes before next run (300 seconds)
+        await asyncio.sleep(300)
+
+@app.on_event("startup")
+async def startup_event():
+    # Start the background worker
+    asyncio.create_task(slow_analysis_worker())
+
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
