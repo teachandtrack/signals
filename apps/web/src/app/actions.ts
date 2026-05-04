@@ -9,6 +9,8 @@ export async function getSignals() {
   const apiUrl = process.env.API_URL || "http://localhost:10000";
   const apiKey = process.env.SIGINT_API_KEY;
 
+  console.log(`Fetching from: ${apiUrl}/signals/queue`);
+
   try {
     const res = await fetch(`${apiUrl}/signals/queue`, {
       headers: {
@@ -17,10 +19,16 @@ export async function getSignals() {
       next: { revalidate: 60 },
     });
 
-    if (!res.ok) return [];
+    console.log(`Fetch status: ${res.status}`);
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`API Error: ${errorText}`);
+      return [];
+    }
     return await res.json();
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error("Fetch error details:", err);
     return [];
   }
 }

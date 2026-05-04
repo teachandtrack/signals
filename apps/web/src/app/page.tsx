@@ -94,7 +94,7 @@ import Link from "next/link";
 import { getSignals } from "./actions";
 
 export default function QueuePage() {
-  const [signals, setSignals] = useState(MOCK_SIGNALS);
+  const [signals, setSignals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -102,13 +102,11 @@ export default function QueuePage() {
     setIsRefreshing(true);
     try {
       const data = await getSignals();
-      if (data && data.length > 0) {
-        setSignals(data);
-      } else {
-        console.log("No real signals found or fetch failed, showing mock data.");
-      }
+      console.log("Fetched signals count:", data?.length);
+      setSignals(data || []);
     } catch (err) {
       console.error("Failed to fetch real signals:", err);
+      setSignals([]);
     } finally {
       setLoading(false);
       setIsRefreshing(false);
