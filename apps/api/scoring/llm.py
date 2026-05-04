@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
 else:
     model = None
     logger.warning("GEMINI_API_KEY is not set. LLM synthesis will be disabled.")

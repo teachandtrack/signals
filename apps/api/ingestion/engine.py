@@ -31,7 +31,7 @@ class IngestionEngine:
                 logger.error(f"Failed to process source {source.name} ({source.url}): {e}")
 
     def process_source(self, source: Source):
-        if source.source_type == SourceType.RSS:
+        if source.source_type in [SourceType.RSS, SourceType.SEC_FILING, SourceType.REGULATORY, SourceType.NEWS]:
             connector = RSSConnector(feed_url=source.url)
         else:
             logger.warning(f"Connector for {source.source_type} not implemented yet.")

@@ -53,7 +53,7 @@ class Source(Base, TimestampMixin):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
     url = Column(String(1024), nullable=False)
-    source_type = Column(Enum(SourceType), nullable=False)
+    source_type = Column(Enum(SourceType, name="source_type", values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     credibility_score = Column(Float, default=0.5)  # 0.0 - 1.0
     is_active = Column(Boolean, default=True)
     raw_documents = relationship("RawDocument", back_populates="source")
@@ -68,7 +68,7 @@ class RawDocument(Base, TimestampMixin):
     content = Column(Text)
     url = Column(String(1024))
     published_at = Column(DateTime)
-    compliance_status = Column(Enum(ComplianceStatus), default=ComplianceStatus.GREEN)
+    compliance_status = Column(Enum(ComplianceStatus, name="compliance_status", values_callable=lambda obj: [e.value for e in obj]), default=ComplianceStatus.GREEN)
     source = relationship("Source", back_populates="raw_documents")
     signals = relationship("SignalSource", back_populates="document")
 
@@ -103,8 +103,8 @@ class Signal(Base, TimestampMixin):
     llm_bull_case = Column(Text)
     llm_bear_case = Column(Text)
     sentiment = Column(String(20))  # bullish / bearish / neutral
-    status = Column(Enum(SignalStatus), default=SignalStatus.PENDING)
-    compliance_status = Column(Enum(ComplianceStatus), default=ComplianceStatus.GREEN)
+    status = Column(Enum(SignalStatus, name="signal_status", values_callable=lambda obj: [e.value for e in obj]), default=SignalStatus.PENDING)
+    compliance_status = Column(Enum(ComplianceStatus, name="compliance_status", values_callable=lambda obj: [e.value for e in obj]), default=ComplianceStatus.GREEN)
 
     # Six-Score Framework
     score_novelty = Column(Float, default=0.0)

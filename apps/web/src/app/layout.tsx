@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "SigInt | Signal Intelligence",
@@ -14,10 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex h-screen overflow-hidden bg-[#09090b] text-zinc-100 selection:bg-indigo-500/30">
+      <body className={`${inter.className} flex h-screen overflow-hidden bg-[#030305] text-zinc-100 selection:bg-indigo-500/30`}>
         
         {/* Sidebar Navigation */}
-        <aside className="w-64 border-r border-zinc-800 bg-[#121214] flex flex-col hidden md:flex z-10">
+        <aside className="w-64 border-r border-white/5 bg-[#0a0a0c]/80 backdrop-blur-xl flex flex-col hidden md:flex z-20">
           <div className="h-16 flex items-center px-6 border-b border-zinc-800">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -53,10 +56,16 @@ export default function RootLayout({
 
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-          {/* Subtle background glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
           
-          <header className="h-16 border-b border-zinc-800/50 bg-[#09090b]/80 backdrop-blur-xl flex items-center justify-between px-8 z-10">
+          {/* Animated Mesh Gradient Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            <div className="absolute -top-[40%] -left-[10%] w-[70%] h-[70%] rounded-full bg-indigo-900/20 blur-[120px] mix-blend-screen animate-blob" />
+            <div className="absolute top-[20%] -right-[20%] w-[60%] h-[60%] rounded-full bg-purple-900/20 blur-[120px] mix-blend-screen animate-blob animation-delay-2000" />
+            <div className="absolute -bottom-[20%] left-[20%] w-[80%] h-[80%] rounded-full bg-emerald-900/10 blur-[120px] mix-blend-screen animate-blob animation-delay-4000" />
+            <div className="absolute inset-0 bg-[#030305]/60 backdrop-blur-[100px]" />
+          </div>
+          
+          <header className="h-16 border-b border-white/5 bg-transparent flex items-center justify-between px-8 z-10">
             <h1 className="text-lg font-semibold tracking-tight">SigInt Dashboard</h1>
             <div className="flex gap-4 items-center">
               <span className="flex items-center gap-2 text-sm text-zinc-400">
