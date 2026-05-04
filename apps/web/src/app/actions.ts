@@ -1,6 +1,9 @@
 "use server";
 
 export async function getSignals() {
+  const cookieStore = await cookies();
+  if (!cookieStore.get("sigint_session")) return [];
+
   const apiUrl = process.env.API_URL || "http://localhost:10000";
   const apiKey = process.env.SIGINT_API_KEY;
 
@@ -21,6 +24,9 @@ export async function getSignals() {
 }
 
 export async function getWatchlist() {
+  const cookieStore = await cookies();
+  if (!cookieStore.get("sigint_session")) return [];
+
   const apiUrl = process.env.API_URL || "http://localhost:10000";
   const apiKey = process.env.SIGINT_API_KEY;
 
@@ -42,6 +48,9 @@ export async function getWatchlist() {
 }
 
 export async function analyzeSignal(signalId: number) {
+  const cookieStore = await cookies();
+  if (!cookieStore.get("sigint_session")) return false;
+
   const apiUrl = process.env.API_URL || "http://localhost:10000";
   const apiKey = process.env.SIGINT_API_KEY;
 
@@ -59,6 +68,9 @@ export async function analyzeSignal(signalId: number) {
   }
 }
 export async function updateSignalStatus(signalId: number, decision: "act" | "dismiss" | "watchlist", notes: string = "") {
+  const cookieStore = await cookies();
+  if (!cookieStore.get("sigint_session")) return false;
+
   const apiUrl = process.env.API_URL || "http://localhost:10000";
   const apiKey = process.env.SIGINT_API_KEY;
 
