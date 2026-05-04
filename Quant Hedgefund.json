@@ -1,0 +1,1490 @@
+{
+  "name": "Quant Hedgefund",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "64321098-84f5-4713-8309-8960dfd37128",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        1824
+      ],
+      "webhookId": "2af0e7d7-7d51-40d0-8735-6f9a9c2d9146",
+      "credentials": {
+        "telegramApi": {
+          "id": "BwQQkWdRYzwTPlKm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "command",
+              "value": "={{ $json.message.text.split(' ')[0].toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "telegram_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "id-3",
+              "name": "username",
+              "value": "={{ $json.message.from.username }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "args",
+              "value": "={{ $json.message.text.split(' ').slice(1).join(' ') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "29e9ff0b-2650-4143-98fb-8393370f6b71",
+      "name": "Parse Command",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        1824
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a1b09765-1cee-4277-b7c1-0c9087c27f56"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "1a18b719-1b87-488a-b213-37b1fb88ca58"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/portfolio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "ce8f46ff-9e54-401b-b41a-6f9cc15d75cb"
+                  },
+                  {
+                    "leftValue": "={{ $json.args }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    },
+                    "id": "b39326a6-783e-42a8-a011-74900e3715e5"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/portfolio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "535e2650-5afd-4abf-b83a-3bd82779f002"
+                  },
+                  {
+                    "leftValue": "={{ $json.args }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0d4234c2-b528-43e9-bf8d-7030ca7a34da"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/analyze",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "1b9d60a3-e389-489c-8565-765d0c55f2de"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/risk",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "641b8b72-b4b2-46ec-b2f3-ca6ca9bb5595"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fe52bf1e-a20e-4445-a3fc-ddc2597b0277",
+      "name": "Command Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1152,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "🤖 Welcome to AI Hedge Fund Bot!\n\nGet expert portfolio analysis from 4 legendary investors: Warren Buffett, Ray Dalio, Cathie Wood, and Bill Ackman.\n\n📋 Commands:\n/portfolio AAPL:100,BTC:0.5 - Save holdings\n/portfolio - View current portfolio\n/analyze - Get AI analysis\n/risk - Risk assessment\n/help - Show commands\n\nStart by adding your portfolio!",
+        "additionalFields": {}
+      },
+      "id": "c020cd43-d7f7-48f8-94cb-01d9cea24e3a",
+      "name": "Send Welcome Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1376,
+        2592
+      ],
+      "webhookId": "23e12e4b-95b0-4325-98fa-f0869f008b13",
+      "credentials": {
+        "telegramApi": {
+          "id": "BwQQkWdRYzwTPlKm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "📚 AI Hedge Fund Bot - Commands\n\n/start - Welcome message\n/portfolio SYMBOL:QTY,... - Save portfolio\n  Example: /portfolio AAPL:100,BTC:0.5,GOLD:50\n/portfolio - View current holdings\n/analyze - Multi-agent AI analysis\n/risk - Risk metrics & assessment\n/help - This message\n\n💡 Tips:\n- Use stock tickers (AAPL, TSLA)\n- International stocks (TSM, BABA)\n- Crypto symbols (BTC, ETH, SOL, DOGE)\n- Commodities (GOLD, OIL, COPPER, WHEAT)",
+        "additionalFields": {}
+      },
+      "id": "f57dee89-6193-47df-af0e-6d0cc01e5587",
+      "name": "Send Help Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1376,
+        1056
+      ],
+      "webhookId": "1168cd41-621c-4f6d-8c3f-ac449143e031",
+      "credentials": {
+        "telegramApi": {
+          "id": "BwQQkWdRYzwTPlKm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "telegram_id",
+              "value": "={{ $json.telegram_id }}",
+              "type": "number"
+            },
+            {
+              "id": "id-2",
+              "name": "items",
+              "value": "={{ $json.args.split(',').map(item => { const [symbol, quantity] = item.trim().split(':'); return { symbol: symbol.toUpperCase(), quantity: parseFloat(quantity), telegram_id: $json.telegram_id }; }) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "ce99b174-1fa8-46c3-a1d7-affc2ef83cbe",
+      "name": "Parse Portfolio Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1376,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "portfolios",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "telegram_id",
+              "fieldValue": "={{ $json.telegram_id }}"
+            },
+            {
+              "fieldId": "symbol",
+              "fieldValue": "={{ $json.symbol }}"
+            },
+            {
+              "fieldId": "quantity",
+              "fieldValue": "={{ $json.quantity }}"
+            }
+          ]
+        }
+      },
+      "id": "95e51597-d658-4aa7-89c8-324642dc4aa2",
+      "name": "Save Portfolio to Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        1248
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YdAXxdqbEuH1Lh3r",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse Portfolio Input').item.json.telegram_id }}",
+        "text": "✅ Portfolio saved successfully!\n\nUse /portfolio to view your holdings\nUse /analyze for AI analysis",
+        "additionalFields": {}
+      },
+      "id": "5041377e-83c3-481f-b667-1089a867284e",
+      "name": "Confirm Portfolio Saved",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2048,
+        1248
+      ],
+      "webhookId": "78ff4aaf-6b29-42a7-9bce-5b24b8b6ba2c",
+      "credentials": {
+        "telegramApi": {
+          "id": "BwQQkWdRYzwTPlKm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "portfolios",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "telegram_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.telegram_id }}"
+            }
+          ]
+        }
+      },
+      "id": "c4915ea7-4439-416b-a248-61cd5fff0e9f",
+      "name": "Get Portfolio from Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        1536
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YdAXxdqbEuH1Lh3r",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Command Router').item.json.telegram_id }}",
+        "text": "={{ \n  (() => {\n    const rows = $json.items ?? [];\n    if (!rows.length) return \"📊 Your Portfolio\\n━━━━━━━━━━━━━━━\\n\\n(no holdings yet)\";\n    const list = rows.map(r => `• ${r.symbol}: ${r.quantity}`).join(\"\\n\");\n    return `📊 Your Portfolio\\n━━━━━━━━━━━━━━━\\n\\n${list}\\n\\n💡 Use /analyze for AI insights`;\n  })()\n}}\n\n",
+        "additionalFields": {}
+      },
+      "id": "b2353ca7-68d9-405a-bb3d-4b038d2b6f3e",
+      "name": "Send Portfolio View",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2048,
+        1632
+      ],
+      "webhookId": "d11496c0-9316-484e-8c6c-dcd2b73e1a6d",
+      "credentials": {
+        "telegramApi": {
+          "id": "BwQQkWdRYzwTPlKm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "portfolios",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "telegram_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.telegram_id }}"
+            }
+          ]
+        }
+      },
+      "id": "5d8a48f0-04cb-4df9-acb5-d0985bee4b43",
+      "name": "Load Portfolio for Analysis",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        2208
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YdAXxdqbEuH1Lh3r",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const portfolio = $input.all().map(item => item.json);\nconst telegram_id = $('Command Router').item.json.telegram_id;\n\n// Calculate metrics\nconst totalPositions = portfolio.length;\nconst symbols = portfolio.map(p => p.symbol).join(', ');\nconst quantities = portfolio.map(p => `${p.symbol}: ${p.quantity}`).join(', ');\n\n// Asset classification\nconst cryptoSymbols = ['BTC', 'ETH', 'BNB', 'SOL', 'ADA', 'XRP', 'DOGE'];\nconst commoditySymbols = ['GOLD', 'SILVER', 'OIL', 'GAS', 'COPPER', 'PLATINUM', 'PALLADIUM', 'WHEAT', 'CORN', 'SOYBEAN'];\n\nconst assetTypes = portfolio.map(p => {\n  if (cryptoSymbols.includes(p.symbol)) return 'crypto';\n  if (commoditySymbols.includes(p.symbol)) return 'commodity';\n  return 'stock';\n});\n\nconst cryptoCount = assetTypes.filter(t => t === 'crypto').length;\nconst stockCount = assetTypes.filter(t => t === 'stock').length;\nconst commodityCount = assetTypes.filter(t => t === 'commodity').length;\n\nconst portfolioSummary = `Portfolio: ${totalPositions} positions\\nAssets: ${symbols}\\nBreakdown: ${stockCount} stocks, ${cryptoCount} crypto, ${commodityCount} commodities\\nQuantities: ${quantities}`;\n\nreturn [{\n  json: {\n    telegram_id,\n    portfolio,\n    portfolioSummary,\n    totalPositions,\n    chatInput: `Analyze this portfolio:\\n${portfolioSummary}`\n  }\n}];"
+      },
+      "id": "2184edcf-c113-4d83-bd25-14c9906a2ab8",
+      "name": "Calculate Portfolio Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Calculate Portfolio Metrics').item.json.chatInput + '\\n\\nMARKET DATA:\\n' + $json.marketContext }}",
+        "options": {
+          "systemMessage": "You are Warren Buffett. Analyze portfolios through value investing principles:\n\n- Business quality & competitive advantages (moats)\n- Intrinsic value vs market price\n- Long-term wealth creation potential\n- Circle of competence considerations\n- Management quality\n- Avoid speculation and short-term thinking\n\nStyle: Folksy wisdom, simple analogies, practical advice.\nOutput: 150-200 words maximum.\n\nProvide your analysis in a conversational tone as if speaking directly to the investor."
+        }
+      },
+      "id": "256a6e1c-3499-4f54-88e0-5fa847a0558d",
+      "name": "Warren Buffett Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2944,
+        2304
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Calculate Portfolio Metrics').item.json.chatInput + '\\n\\nMARKET DATA:\\n' + $json.marketContext }}",
+        "options": {
+          "systemMessage": "You are Ray Dalio. Analyze portfolios through macro/risk parity principles:\n\n- Economic scenarios (growth/inflation combinations)\n- Risk-balanced diversification across asset classes\n- Portfolio resilience across different regimes\n- Correlation analysis between holdings\n- All-Weather Portfolio approach\n- Systematic risk management\n\nStyle: Systematic, principle-based, data-driven.\nOutput: 150-200 words maximum.\n\nProvide your analysis focusing on risk balance and economic scenario planning."
+        }
+      },
+      "id": "a593750d-9d1a-406f-996f-9fe9e46ba868",
+      "name": "Ray Dalio Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2944,
+        2800
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "id": "61babd03-0f97-425d-83d8-43f635ead897",
+      "name": "OpenAI Chat Model - Buffett",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3024,
+        2528
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "mTU0qrB9NCnt4Ocr",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "id": "4663554e-9040-4858-bfd4-351af6a99cd2",
+      "name": "OpenAI Chat Model - Dalio",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3024,
+        3024
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "mTU0qrB9NCnt4Ocr",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "4f85decd-e96d-402c-a88f-a51db4232f6e",
+      "name": "Merge Agent Outputs",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3296,
+        2176
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst telegram_id = $('Command Router').item.json.telegram_id;\nconst portfolioData = $('Calculate Portfolio Metrics').item.json;\n\n// Extract agent responses\nconst buffettResponse = items[0].json.output || items[0].json.text || 'Analysis unavailable';\nconst dalioResponse = items[1].json.output || items[1].json.text || 'Analysis unavailable';\nconst woodResponse = items[2].json.output || items[2].json.text || 'Analysis unavailable';\nconst ackmanResponse = items[3].json.output || items[3].json.text || 'Analysis unavailable';\n\n// Extract quantitative metrics from Quantitative Analysis node\nconst quantData = $('Quantitative Analysis').first()?.json || {};\nconst sharpeRatio = quantData.sharpeRatio || 'N/A';\nconst volatility = quantData.volatility || 'N/A';\nconst beta = quantData.beta || 'N/A';\nconst alpha = quantData.alpha || 'N/A';\nconst maxDrawdown = quantData.maxDrawdown || 'N/A';\nconst var95 = quantData.var95 || 'N/A';\nconst concentrationIndex = quantData.concentrationIndex || 'N/A';\n\n// Build quantitative metrics section\nconst quantMetrics = `📈 QUANTITATIVE METRICS\n━━━━━━━━━━━━━━━━━━━\n\n• Sharpe Ratio: ${sharpeRatio}\n• Volatility: ${volatility}\n• Beta: ${beta}\n• Alpha: ${alpha}\n• Max Drawdown: ${maxDrawdown}\n• VaR (95%): ${var95}\n• Concentration Index: ${concentrationIndex}`;\n\n// Format output\nconst formattedMessage = `📊 PORTFOLIO ANALYSIS\n━━━━━━━━━━━━━━━━━━━\n\n${portfolioData.portfolioSummary}\n\n${quantMetrics}\n\n━━━━━━━━━━━━━━━━━━━\n👔 WARREN BUFFETT\n\n${buffettResponse}\n\n━━━━━━━━━━━━━━━━━━━\n🌊 RAY DALIO\n\n${dalioResponse}\n\n━━━━━━━━━━━━━━━━━━━\n🚀 CATHIE WOOD\n\n${woodResponse}\n\n━━━━━━━━━━━━━━━━━━━\n🎯 BILL ACKMAN\n\n${ackmanResponse}\n\n━━━━━━━━━━━━━━━━━━━\n💡 Use /risk for detailed risk metrics`;\n\nreturn [{\n  json: {\n    telegram_id,\n    message: formattedMessage\n  }\n}];"
+      },
+      "id": "71cb00be-5919-41c8-a5b3-65255f356c15",
+      "name": "Format Analysis Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3520,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": {}
+      },
+      "id": "acd4f145-5dfb-4030-bdfc-1ff8994bf882",
+      "name": "Send Analysis to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3744,
+        2208
+      ],
+      "webhookId": "16e759d5-caab-4c18-9757-1c3c043d0f5d",
+      "credentials": {
+        "telegramApi": {
+          "id": "BwQQkWdRYzwTPlKm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "portfolios",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "telegram_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.telegram_id }}"
+            }
+          ]
+        }
+      },
+      "id": "c198653b-474e-474c-84c8-1a444f0eb9ed",
+      "name": "Load Portfolio for Risk",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        2400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YdAXxdqbEuH1Lh3r",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const portfolio = $input.all().map(item => item.json);\nconst telegram_id = $('Command Router').item.json.telegram_id;\n\nif (portfolio.length === 0) {\n  return [{\n    json: {\n      telegram_id,\n      riskMessage: '⚠️ No portfolio found. Use /portfolio to add holdings first.'\n    }\n  }];\n}\n\n// Calculate concentration risk\nconst totalPositions = portfolio.length;\nconst largePositions = portfolio.filter(p => p.quantity > 10).length;\n\n// Diversification score (simple: based on number of positions)\nlet diversificationScore = Math.min(10, totalPositions);\n\n// Risk level\nlet riskLevel = 'LOW';\nif (totalPositions < 3) riskLevel = 'HIGH';\nelse if (totalPositions < 6) riskLevel = 'MODERATE';\n\n// Asset type analysis\nconst cryptoSymbols = ['BTC', 'ETH', 'BNB', 'SOL', 'ADA', 'XRP', 'DOGE'];\nconst commoditySymbols = ['GOLD', 'SILVER', 'OIL', 'GAS', 'COPPER', 'PLATINUM', 'PALLADIUM', 'WHEAT', 'CORN', 'SOYBEAN'];\n\nconst cryptoCount = portfolio.filter(p => cryptoSymbols.includes(p.symbol)).length;\nconst stockCount = portfolio.filter(p => !cryptoSymbols.includes(p.symbol) && !commoditySymbols.includes(p.symbol)).length;\nconst commodityCount = portfolio.filter(p => commoditySymbols.includes(p.symbol)).length;\n\nconst riskMessage = `⚠️ RISK ASSESSMENT\n━━━━━━━━━━━━━━━━━━━\n\n🎯 Risk Level: ${riskLevel}\n📊 Diversification Score: ${diversificationScore}/10\n\n📈 Portfolio Breakdown:\n• Stocks: ${stockCount} positions\n• Crypto: ${cryptoCount} positions\n• Commodities: ${commodityCount} positions\n\n⚡ Risk Factors:\n• Total Positions: ${totalPositions}\n• Concentration: ${largePositions} large positions\n• Asset Classes: ${[stockCount > 0 ? 'Stocks' : null, cryptoCount > 0 ? 'Crypto' : null, commodityCount > 0 ? 'Commodities' : null].filter(Boolean).join(', ')}\n\n💡 Recommendations:\n${totalPositions < 5 ? '- Consider adding more positions for diversification\\n' : ''}${cryptoCount > stockCount + commodityCount ? '- High crypto exposure - consider rebalancing\\n' : ''}${commodityCount === 0 ? '- Add commodities for inflation hedge\\n' : ''}\n\nUse /analyze for detailed AI insights`;\n\nreturn [{\n  json: {\n    telegram_id,\n    riskMessage\n  }\n}];"
+      },
+      "id": "282d517a-64b3-4f56-b72a-d071c96d5856",
+      "name": "Calculate Risk Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        2400
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "={{ $json.riskMessage }}",
+        "additionalFields": {}
+      },
+      "id": "0a2484fa-780b-40bc-8fde-f4795d091420",
+      "name": "Send Risk Assessment",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1824,
+        2400
+      ],
+      "webhookId": "6a5870c3-3c71-4ba1-a662-9e389bb70636",
+      "credentials": {
+        "telegramApi": {
+          "id": "BwQQkWdRYzwTPlKm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $('Parse Portfolio Input').item.json.items;\nreturn items.map(item => ({ json: item }));"
+      },
+      "id": "7f91d8ee-01cd-4645-a2a4-0e3745102e34",
+      "name": "Split Portfolio Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get portfolio data from previous node\nconst portfolioData = $input.item.json;\nconst portfolio = portfolioData.portfolio;\nconst telegram_id = portfolioData.telegram_id;\n\n// Define known crypto symbols\nconst cryptoSymbols = ['BTC', 'ETH', 'BNB', 'SOL', 'ADA', 'XRP', 'DOGE', 'DOT', 'MATIC', 'AVAX', 'LINK', 'UNI', 'ATOM', 'LTC', 'BCH', 'XLM', 'ALGO', 'VET', 'ICP', 'FIL'];\n\n// Define known commodity symbols\nconst commoditySymbols = ['GOLD', 'SILVER', 'OIL', 'GAS', 'COPPER', 'PLATINUM', 'PALLADIUM', 'WHEAT', 'CORN', 'SOYBEAN'];\n\n// Define known international stock symbols (ADRs and foreign stocks)\nconst internationalSymbols = ['BABA', 'TSM', 'NIO', 'BIDU', 'JD', 'PDD', 'TCEHY', 'ASML', 'SAP', 'NVO', 'UL', 'TM', 'SNY', 'BP', 'HSBC'];\n\n// Extract all symbols from portfolio\nconst allSymbols = portfolio.map(p => p.symbol);\n\n// Separate into different asset classes\nconst crypto_symbols = allSymbols.filter(symbol => cryptoSymbols.includes(symbol));\nconst commodity_symbols = allSymbols.filter(symbol => commoditySymbols.includes(symbol));\nconst international_symbols = allSymbols.filter(symbol => \n  internationalSymbols.includes(symbol) || symbol.includes('.') || symbol.includes(':'));\nconst stock_symbols = allSymbols.filter(symbol => \n  !cryptoSymbols.includes(symbol) && \n  !commoditySymbols.includes(symbol) && \n  !internationalSymbols.includes(symbol) && \n  !symbol.includes('.') && \n  !symbol.includes(':'));\n\n// Return structured data\nreturn [{\n  json: {\n    telegram_id,\n    portfolio,\n    stock_symbols,\n    international_symbols,\n    crypto_symbols,\n    commodity_symbols,\n    total_symbols: allSymbols.length,\n    stock_count: stock_symbols.length,\n    international_count: international_symbols.length,\n    crypto_count: crypto_symbols.length,\n    commodity_count: commodity_symbols.length\n  }\n}];"
+      },
+      "id": "d25a177e-b9ca-4990-98ce-c78f4b17b6bb",
+      "name": "Fetch Market Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.polygon.io/v2/aggs/ticker/AAPL/prev?adjusted=true\n",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "tickers",
+              "value": "={{ $('Fetch Market Data').item.json.stock_symbols.join(',') }}"
+            },
+            {
+              "name": "apiKey"
+            },
+            {
+              "name": "adjusted",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "29bbe22e-0a6a-4edd-afe0-5f97dc3ed940",
+      "name": "Get Stock Data from Polygon",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2048,
+        2016
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.coingecko.com/api/v3/simple/price",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ids",
+              "value": "={{ $('Fetch Market Data').item.json.crypto_symbols.map(s => s.toLowerCase()).join(',') }}"
+            },
+            {
+              "name": "vs_currencies",
+              "value": "usd"
+            },
+            {
+              "name": "include_24hr_change",
+              "value": "true"
+            },
+            {
+              "name": "include_market_cap",
+              "value": "true"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "2ec8f2a4-2f72-4f20-834a-8f28f17b0015",
+      "name": "Get Crypto Data from CoinGecko",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2048,
+        2400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('Fetch Market Data').item.json.stock_symbols.concat($('Fetch Market Data').item.json.crypto_symbols).filter(s => s).join(' OR ') || 'stock market' }}"
+            },
+            {
+              "name": "apiKey"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "pageSize",
+              "value": "10"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d0658a46-06b4-4173-b5d8-31fcbcdc7357",
+      "name": "Get News from NewsAPI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2048,
+        2592
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Aggregate Portfolio Data with Market Prices\ntry {\n  const allData = $input.all();\n  \n  // Get portfolio from first execution\n  const portfolioData = allData[0].json;\n  const holdings = portfolioData.holdings || [];\n  const chatId = portfolioData.chatId;\n  const userId = portfolioData.userId;\n  \n  // Initialize aggregated data\n  const enrichedHoldings = [];\n  let totalValue = 0;\n  const assetBreakdown = {\n    stocks: { count: 0, value: 0, allocation: 0 },\n    crypto: { count: 0, value: 0, allocation: 0 },\n    commodities: { count: 0, value: 0, allocation: 0 },\n    bonds: { count: 0, value: 0, allocation: 0 }\n  };\n  \n  // Process each holding\n  for (let i = 0; i < holdings.length; i++) {\n    const holding = holdings[i];\n    const symbol = holding.symbol;\n    const quantity = holding.quantity || 0;\n    const assetType = holding.assetType || 'stock';\n    \n    // Find price data for this holding\n    let currentPrice = 0;\n    let priceSource = 'unknown';\n    \n    // Search through all market data responses\n    for (const item of allData) {\n      if (!item.json) continue;\n      \n      // Check Polygon stock data\n      if (item.json.ticker === symbol && item.json.results && item.json.results.length > 0) {\n        const result = item.json.results[0];\n        currentPrice = result.c || result.vw || 0; // Use close price or volume-weighted\n        priceSource = 'polygon';\n        break;\n      }\n      \n      // Check CoinGecko crypto data (if you have it)\n      if (item.json[holding.coinId]) {\n        currentPrice = item.json[holding.coinId].usd || 0;\n        priceSource = 'coingecko';\n        break;\n      }\n    }\n    \n    // Calculate values (with safety checks)\n    const positionValue = currentPrice > 0 ? quantity * currentPrice : 0;\n    totalValue += positionValue;\n    \n    // Update asset breakdown\n    const assetKey = assetType.toLowerCase() + 's'; // stocks, cryptos, etc\n    if (assetBreakdown[assetKey]) {\n      assetBreakdown[assetKey].count++;\n      assetBreakdown[assetKey].value += positionValue;\n    }\n    \n    // Add enriched holding\n    enrichedHoldings.push({\n      symbol,\n      quantity,\n      assetType,\n      currentPrice: currentPrice > 0 ? parseFloat(currentPrice.toFixed(2)) : 0,\n      positionValue: positionValue > 0 ? parseFloat(positionValue.toFixed(2)) : 0,\n      priceSource,\n      allocation: 0 // Will calculate after total is known\n    });\n  }\n  \n  // Calculate allocations (only if totalValue > 0)\n  if (totalValue > 0) {\n    enrichedHoldings.forEach(holding => {\n      holding.allocation = parseFloat(((holding.positionValue / totalValue) * 100).toFixed(2));\n    });\n    \n    // Calculate asset type allocations\n    Object.keys(assetBreakdown).forEach(key => {\n      if (assetBreakdown[key].value > 0) {\n        assetBreakdown[key].allocation = parseFloat(((assetBreakdown[key].value / totalValue) * 100).toFixed(2));\n      }\n    });\n  }\n  \n  // Calculate risk metrics\n  const positionCount = enrichedHoldings.length;\n  const maxPosition = enrichedHoldings.length > 0 \n    ? Math.max(...enrichedHoldings.map(h => h.allocation)) \n    : 0;\n  \n  const concentrationRisk = maxPosition > 20 ? 'HIGH' \n    : maxPosition > 10 ? 'MODERATE' \n    : 'LOW';\n  \n  const diversificationScore = Math.min(10, positionCount);\n  \n  // Volatility score based on asset mix\n  const cryptoWeight = assetBreakdown.crypto.allocation / 100;\n  const stockWeight = assetBreakdown.stocks.allocation / 100;\n  const volatilityScore = parseFloat((\n    cryptoWeight * 3.0 + \n    stockWeight * 2.0 + \n    assetBreakdown.commodities.allocation / 100 * 1.5 +\n    assetBreakdown.bonds.allocation / 100 * 0.5\n  ).toFixed(1));\n  \n  // Return aggregated portfolio\n  return [{\n    portfolio: {\n      totalValue: parseFloat(totalValue.toFixed(2)),\n      positionCount,\n      holdings: enrichedHoldings,\n      assetBreakdown,\n      riskMetrics: {\n        concentrationRisk,\n        diversificationScore,\n        volatilityScore,\n        maxPositionSize: parseFloat(maxPosition.toFixed(2))\n      }\n    },\n    chatId,\n    userId,\n    timestamp: new Date().toISOString()\n  }];\n  \n} catch (error) {\n  return [{\n    error: true,\n    message: `Error aggregating portfolio data: ${error.message}`,\n    stack: error.stack,\n    chatId: $input.first().json.chatId || 'unknown'\n  }];\n}"
+      },
+      "id": "ed6fc87b-5c58-440d-b5ab-5d8b223c9946",
+      "name": "Aggregate Market Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2496,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst telegram_id = $('Command Router').item.json.telegram_id;\n\nreturn [{\n  json: {\n    telegram_id,\n    itemCount: items.length,\n    items: items.map(i => i.json),\n    queryInfo: 'Checking Supabase results'\n  }\n}];"
+      },
+      "id": "ed9c683d-216d-4b52-a709-ed8d5494d93c",
+      "name": "Debug Portfolio Query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        1536
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $input.all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b4a2432e-312f-4b5d-9b73-70f0b8432a99",
+      "name": "Check Portfolio Exists",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1824,
+        1536
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Command Router').item.json.telegram_id }}",
+        "text": "📊 Your portfolio is empty!\n\nUse /portfolio SYMBOL:QTY to add holdings.\n\nExample:\n/portfolio AAPL:100,BTC:0.5,GOLD:50",
+        "additionalFields": {}
+      },
+      "id": "12614e0f-86d0-47c1-846f-aed612b50b82",
+      "name": "Send Empty Portfolio Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2048,
+        1440
+      ],
+      "webhookId": "1deddb50-1bee-4fd8-bbb0-393cd1921176",
+      "credentials": {
+        "telegramApi": {
+          "id": "BwQQkWdRYzwTPlKm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "id": "357428d6-7b26-438f-b8fc-fa43cba51155",
+      "name": "Wait for All API Calls",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2272,
+        2160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Calculate Portfolio Metrics').item.json.chatInput + '\\n\\nMARKET DATA:\\n' + $json.marketContext }}",
+        "options": {
+          "systemMessage": "You are Cathie Wood, founder of ARK Invest. Analyze portfolios through disruptive innovation lens:\n\n- Exponential growth technologies (AI, genomics, blockchain, robotics)\n- Innovation convergence and platform effects\n- Long-term transformative potential over short-term volatility\n- Conviction in breakthrough companies\n- Future-focused, high-growth opportunities\n- Willingness to embrace volatility for innovation exposure\n\nStyle: Visionary, conviction-driven, future-focused.\nOutput: 150-200 words maximum.\n\nProvide your analysis emphasizing innovation and disruptive technology potential."
+        }
+      },
+      "id": "a1faea3e-a92b-4922-be85-ca0f56f10064",
+      "name": "Cathie Wood Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2944,
+        1504
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Calculate Portfolio Metrics').item.json.chatInput + '\\n\\nMARKET DATA:\\n' + $json.marketContext }}",
+        "options": {
+          "systemMessage": "You are Bill Ackman, activist investor and founder of Pershing Square. Analyze portfolios through concentrated value and activism lens:\n\n- High-conviction concentrated positions\n- Quality businesses with pricing power\n- Catalyst-driven opportunities\n- Management accountability and governance\n- Downside protection through business quality\n- Active engagement to unlock value\n\nStyle: Confident, analytical, focused on catalysts.\nOutput: 150-200 words maximum.\n\nProvide your analysis emphasizing quality, concentration, and catalysts for value creation."
+        }
+      },
+      "id": "4949055b-edf5-4a2d-bb8d-90c708aae9b3",
+      "name": "Bill Ackman Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2944,
+        1904
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "a08681d8-49d9-4375-a00c-16b620eded71",
+      "name": "OpenAI Chat Model - Wood",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3024,
+        1728
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "mTU0qrB9NCnt4Ocr",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "3710bd80-21ae-4f62-b1e5-9897a036924d",
+      "name": "OpenAI Chat Model - Ackman",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3024,
+        2128
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "mTU0qrB9NCnt4Ocr",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.polygon.io/v2/aggs/ticker/GC/prev",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "tickers",
+              "value": "={{ $('Fetch Market Data').item.json.commodity_symbols.join(',') }}"
+            },
+            {
+              "name": "adjusted",
+              "value": "true"
+            },
+            {
+              "name": "apiKey"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "67f40cc5-652a-4928-8104-b8ddbe7856c2",
+      "name": "Get Commodity Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2048,
+        1824
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.polygon.io/v3/reference/tickers",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "market",
+              "value": "stocks"
+            },
+            {
+              "name": "active",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "apiKey"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5bb9da36-cdd9-4bfa-8205-b9be6017206f",
+      "name": "Get International Stock Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2048,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get market data from previous node\nconst marketData = $input.first().json;\nconst portfolio = marketData.portfolio;\nconst stockPrices = marketData.stockPrices || {};\nconst cryptoPrices = marketData.cryptoPrices || {};\nconst commodityPrices = marketData.commodityPrices || {};\nconst internationalPrices = marketData.internationalPrices || {};\nconst telegram_id = marketData.telegram_id;\n\n// Combine all price data\nconst allPrices = { ...stockPrices, ...cryptoPrices, ...commodityPrices, ...internationalPrices };\n\n// Calculate portfolio metrics\nlet totalValue = 0;\nlet weightedReturns = 0;\nlet portfolioPositions = [];\n\nfor (const holding of portfolio) {\n  const priceData = allPrices[holding.symbol];\n  if (priceData) {\n    const value = holding.quantity * priceData.price;\n    totalValue += value;\n    portfolioPositions.push({\n      symbol: holding.symbol,\n      quantity: holding.quantity,\n      price: priceData.price,\n      value: value,\n      dailyReturn: parseFloat(priceData.changePercent) || 0\n    });\n  }\n}\n\n// Calculate position weights and weighted returns\nfor (const position of portfolioPositions) {\n  position.weight = (position.value / totalValue) * 100;\n  weightedReturns += (position.dailyReturn * position.weight / 100);\n}\n\n// 1. CONCENTRATION METRICS\nconst sortedWeights = portfolioPositions.map(p => p.weight).sort((a, b) => b - a);\nconst top3Concentration = sortedWeights.slice(0, 3).reduce((sum, w) => sum + w, 0);\nconst herfindahlIndex = sortedWeights.reduce((sum, w) => sum + Math.pow(w / 100, 2), 0);\n\n// 2. VOLATILITY ESTIMATION (simplified using daily returns)\nconst returns = portfolioPositions.map(p => p.dailyReturn);\nconst avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;\nconst variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;\nconst dailyVolatility = Math.sqrt(variance);\nconst annualizedVolatility = dailyVolatility * Math.sqrt(252); // 252 trading days\n\n// 3. SHARPE RATIO (assuming 4% risk-free rate)\nconst riskFreeRate = 4.0;\nconst excessReturn = weightedReturns - (riskFreeRate / 252); // Daily risk-free rate\nconst sharpeRatio = annualizedVolatility > 0 ? (excessReturn * Math.sqrt(252)) / annualizedVolatility : 0;\n\n// 4. VALUE AT RISK (VaR) - 95% confidence, 1-day horizon\nconst zScore95 = 1.645; // 95% confidence\nconst valueAtRisk = totalValue * dailyVolatility * zScore95;\nconst varPercentage = (valueAtRisk / totalValue) * 100;\n\n// 5. MAXIMUM DRAWDOWN ESTIMATION (using current daily changes)\nconst negativeReturns = returns.filter(r => r < 0);\nconst maxDailyLoss = negativeReturns.length > 0 ? Math.min(...negativeReturns) : 0;\nconst estimatedMaxDrawdown = maxDailyLoss * 1.5; // Rough estimate\n\n// 6. BETA & ALPHA (simplified - using average market return as proxy)\nconst marketReturn = 0.10; // Assume 10% annual market return\nconst portfolioAnnualReturn = weightedReturns * 252;\nconst beta = annualizedVolatility / 15; // Rough estimate using 15% market volatility\nconst alpha = portfolioAnnualReturn - (riskFreeRate + beta * (marketReturn - riskFreeRate));\n\n// 7. MOMENTUM INDICATORS\nconst positiveReturns = returns.filter(r => r > 0).length;\nconst momentumScore = (positiveReturns / returns.length) * 100;\nconst avgPositiveReturn = returns.filter(r => r > 0).reduce((sum, r) => sum + r, 0) / positiveReturns || 0;\nconst avgNegativeReturn = returns.filter(r => r < 0).reduce((sum, r) => sum + r, 0) / negativeReturns.length || 0;\nconst winLossRatio = avgNegativeReturn !== 0 ? Math.abs(avgPositiveReturn / avgNegativeReturn) : 0;\n\n// 8. CORRELATION MATRIX (simplified pairwise)\nconst correlationPairs = [];\nfor (let i = 0; i < portfolioPositions.length; i++) {\n  for (let j = i + 1; j < portfolioPositions.length; j++) {\n    const pos1 = portfolioPositions[i];\n    const pos2 = portfolioPositions[j];\n    // Simplified correlation based on return direction\n    const correlation = (pos1.dailyReturn * pos2.dailyReturn > 0) ? 0.7 : -0.3;\n    correlationPairs.push({\n      pair: `${pos1.symbol}-${pos2.symbol}`,\n      correlation: correlation.toFixed(2)\n    });\n  }\n}\n\n// 9. RISK-ADJUSTED METRICS\nconst sortinoRatio = dailyVolatility > 0 ? (excessReturn * Math.sqrt(252)) / (Math.abs(avgNegativeReturn) * Math.sqrt(252)) : 0;\nconst calmarRatio = estimatedMaxDrawdown !== 0 ? portfolioAnnualReturn / Math.abs(estimatedMaxDrawdown) : 0;\n\n// Format quantitative analysis report\nconst quantReport = `📊 QUANTITATIVE ANALYSIS\n━━━━━━━━━━━━━━━━━━━━━━━━\n\n💰 PORTFOLIO VALUE: $${totalValue.toFixed(2)}\n📈 Daily Return: ${weightedReturns.toFixed(2)}%\n📊 Annualized Return: ${portfolioAnnualReturn.toFixed(2)}%\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n⚡ RISK METRICS\n\n• Volatility (Annual): ${annualizedVolatility.toFixed(2)}%\n• Sharpe Ratio: ${sharpeRatio.toFixed(2)}\n• Sortino Ratio: ${sortinoRatio.toFixed(2)}\n• Beta: ${beta.toFixed(2)}\n• Alpha: ${alpha.toFixed(2)}%\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n📉 DOWNSIDE RISK\n\n• Value at Risk (95%): $${valueAtRisk.toFixed(2)} (${varPercentage.toFixed(2)}%)\n• Est. Max Drawdown: ${estimatedMaxDrawdown.toFixed(2)}%\n• Calmar Ratio: ${calmarRatio.toFixed(2)}\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n🎯 CONCENTRATION\n\n• Top 3 Holdings: ${top3Concentration.toFixed(1)}%\n• Herfindahl Index: ${herfindahlIndex.toFixed(3)}\n• Diversification: ${herfindahlIndex < 0.15 ? 'Well Diversified' : herfindahlIndex < 0.25 ? 'Moderate' : 'Concentrated'}\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n📈 MOMENTUM\n\n• Momentum Score: ${momentumScore.toFixed(1)}%\n• Win/Loss Ratio: ${winLossRatio.toFixed(2)}\n• Avg Win: ${avgPositiveReturn.toFixed(2)}%\n• Avg Loss: ${avgNegativeReturn.toFixed(2)}%\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n📊 POSITION BREAKDOWN\n\n${portfolioPositions.map(p => `• ${p.symbol}: ${p.weight.toFixed(1)}% ($${p.value.toFixed(2)})`).join('\\n')}\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n🔗 TOP CORRELATIONS\n\n${correlationPairs.slice(0, 5).map(c => `• ${c.pair}: ${c.correlation}`).join('\\n')}`;\n\n// Create enhanced market context with quantitative metrics\nconst enhancedMarketContext = `${marketData.marketContext}\\n\\n${quantReport}`;\n\nreturn {\n  json: {\n    telegram_id,\n    portfolio,\n    marketContext: enhancedMarketContext,\n    quantitativeMetrics: {\n      totalValue,\n      dailyReturn: weightedReturns,\n      annualizedReturn: portfolioAnnualReturn,\n      annualizedVolatility,\n      sharpeRatio,\n      sortinoRatio,\n      beta,\n      alpha,\n      valueAtRisk,\n      varPercentage,\n      maxDrawdown: estimatedMaxDrawdown,\n      calmarRatio,\n      top3Concentration,\n      herfindahlIndex,\n      momentumScore,\n      winLossRatio,\n      portfolioPositions,\n      correlationPairs\n    },\n    quantReport\n  }\n};"
+      },
+      "id": "f93eddb3-eaee-4c41-8845-3880a94c4d79",
+      "name": "Quantitative Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        2208
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Command": {
+      "main": [
+        [
+          {
+            "node": "Command Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Command Router": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Help Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Portfolio Input",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Portfolio from Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Load Portfolio for Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Load Portfolio for Risk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Portfolio Input": {
+      "main": [
+        [
+          {
+            "node": "Split Portfolio Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Portfolio to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Confirm Portfolio Saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Portfolio for Analysis": {
+      "main": [
+        [
+          {
+            "node": "Calculate Portfolio Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model - Buffett": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Warren Buffett Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model - Dalio": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ray Dalio Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Warren Buffett Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Agent Outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ray Dalio Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Agent Outputs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Agent Outputs": {
+      "main": [
+        [
+          {
+            "node": "Format Analysis Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Analysis Output": {
+      "main": [
+        [
+          {
+            "node": "Send Analysis to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Portfolio for Risk": {
+      "main": [
+        [
+          {
+            "node": "Calculate Risk Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Risk Metrics": {
+      "main": [
+        [
+          {
+            "node": "Send Risk Assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Portfolio Items": {
+      "main": [
+        [
+          {
+            "node": "Save Portfolio to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Market Data": {
+      "main": [
+        [
+          {
+            "node": "Get Stock Data from Polygon",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Crypto Data from CoinGecko",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get News from NewsAPI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Commodity Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get International Stock Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Market Data": {
+      "main": [
+        [
+          {
+            "node": "Quantitative Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Portfolio Metrics": {
+      "main": [
+        [
+          {
+            "node": "Fetch Market Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Portfolio from Supabase": {
+      "main": [
+        [
+          {
+            "node": "Debug Portfolio Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debug Portfolio Query": {
+      "main": [
+        [
+          {
+            "node": "Check Portfolio Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Portfolio Exists": {
+      "main": [
+        [
+          {
+            "node": "Send Portfolio View",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Empty Portfolio Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stock Data from Polygon": {
+      "main": [
+        [
+          {
+            "node": "Wait for All API Calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Crypto Data from CoinGecko": {
+      "main": [
+        [
+          {
+            "node": "Wait for All API Calls",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Wait for All API Calls": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Market Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get News from NewsAPI": {
+      "main": [
+        [
+          {
+            "node": "Wait for All API Calls",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model - Wood": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Cathie Wood Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model - Ackman": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Bill Ackman Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cathie Wood Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Agent Outputs",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Bill Ackman Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Agent Outputs",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Get Commodity Data": {
+      "main": [
+        [
+          {
+            "node": "Wait for All API Calls",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Get International Stock Data": {
+      "main": [
+        [
+          {
+            "node": "Wait for All API Calls",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Quantitative Analysis": {
+      "main": [
+        [
+          {
+            "node": "Warren Buffett Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Ray Dalio Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Cathie Wood Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Bill Ackman Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2765f04a-dabe-4886-9e80-4533ced2c7d7",
+  "meta": {
+    "instanceId": "bda284ba69a5bf5f0d731ca0a44a60340df82eff9ee04a27b6a86d364a4b86e3"
+  },
+  "id": "InunBcLsugNOJD5u",
+  "tags": []
+}
