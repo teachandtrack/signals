@@ -41,6 +41,23 @@ export async function getWatchlist() {
   }
 }
 
+export async function analyzeSignal(signalId: number) {
+  const apiUrl = process.env.API_URL || "http://localhost:10000";
+  const apiKey = process.env.SIGINT_API_KEY;
+
+  try {
+    const res = await fetch(`${apiUrl}/signals/${signalId}/analyze`, {
+      method: "POST",
+      headers: {
+        "X-API-Key": apiKey || "",
+      },
+    });
+
+    return res.ok;
+  } catch (err) {
+    return false;
+  }
+}
 export async function updateSignalStatus(signalId: number, decision: "act" | "dismiss" | "watchlist", notes: string = "") {
   const apiUrl = process.env.API_URL || "http://localhost:10000";
   const apiKey = process.env.SIGINT_API_KEY;

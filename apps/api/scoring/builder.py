@@ -103,3 +103,44 @@ class SignalBuilder:
         logger.info(f"Generated new Signal ID {signal.id} (Score: {scores['total']})")
         
         self.db.commit()
+
+    def analyze_signal(self, signal_id: int):
+        """Perform deep LLM analysis on an existing signal."""
+        signal = self.db.query(models.Signal).filter(models.Signal.id == signal_id).first()
+        if not signal:
+            return False
+            
+        # Get the document content
+        signal_source = self.db.query(models.SignalSource).filter(models.SignalSource.signal_id == signal.id).first()
+        if not signal_source:
+            return False
+            
+        doc = self.db.query(models.RawDocument).filter(models.RawDocument.id == signal_source.document_id).first()
+        if not doc:
+            return False
+            
+        # Run synthesis
+        synthesis = GeminiSynthesizer.synthesize_signal(doc.content or "")
+        
+        # Update signal
+        signal.summary = synthesis["summary"]
+        signal.llm_bull_case = synthesis["bull_case"]
+        signal.llm_bear_case = synthesis["bear_case"]
+        signal.sentiment = synthesis["sentiment"]
+        signal.updated_at = datetime.utcnow()
+        
+        self.db.commit()
+        return True
+
+    def analyze_one_skipped(self):
+        """Find one signal that had analysis skipped and analyze it."""
+        signal = (
+            self.db.query(models.Signal)
+            .filter(models.Signal.summary.like("%Analysis skipped%"))
+            .order_by(models.Signal.created_at.desc())
+            .first()
+        )
+        if signal:
+            logger.info(f"Slow Analysis: Picking up signal {signal.id}")
+            return self.analyze_signal(signal.id)
+        return False

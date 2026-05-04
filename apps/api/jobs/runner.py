@@ -51,16 +51,25 @@ def run_signal_generation():
     logger.info("Signal generation complete")
 
 
-def run_expiry_check():
-    """Mark signals as EXPIRED if they have passed their expires_at timestamp."""
-    logger.info("Running expiry check...")
-    # TODO: query DB for PENDING signals past expires_at, mark as EXPIRED
-    logger.info("Expiry check complete (stub)")
+def run_slow_analysis():
+    """Find one signal that needs analysis and process it."""
+    logger.info("Running slow analysis job...")
+    db = SessionLocal()
+    try:
+        builder = SignalBuilder(db)
+        success = builder.analyze_one_skipped()
+        if success:
+            logger.info("Slow analysis successful")
+        else:
+            logger.info("No signals found for slow analysis")
+    finally:
+        db.close()
 
 
 if __name__ == "__main__":
     run_ingestion()
     run_signal_generation()
+    run_slow_analysis()
     run_expiry_check()
 
 

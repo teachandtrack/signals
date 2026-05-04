@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { updateSignalStatus } from "@/app/actions";
+import { updateSignalStatus, analyzeSignal } from "@/app/actions";
 
-export default function SignalCard({ signal }: { signal: any }) {
+export default function SignalCard({ signal, isRaw = false }: { signal: any, isRaw?: boolean }) {
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   // Determine gradient color based on total score
   const scoreColor = 
@@ -15,12 +16,12 @@ export default function SignalCard({ signal }: { signal: any }) {
   return (
     <div className="glass-panel p-6 flex flex-col gap-6 relative overflow-hidden group">
       {/* Decorative gradient blur based on score */}
-      <div className={`absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br ${scoreColor} rounded-full blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity duration-500`} />
+      <div className={`absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br ${isRaw ? 'from-zinc-500 to-zinc-700' : scoreColor} rounded-full blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity duration-500`} />
       
       {/* Header: Score and Tickers */}
       <div className="flex justify-between items-start">
         <div className="flex gap-2 items-center">
-          <div className={`text-2xl font-black bg-clip-text text-transparent bg-gradient-to-br ${scoreColor}`}>
+          <div className={`text-2xl font-black bg-clip-text text-transparent bg-gradient-to-br ${isRaw ? 'from-zinc-400 to-zinc-600' : scoreColor}`}>
             {(signal.scores.total * 100).toFixed(0)}
           </div>
           <div className="flex flex-col">
@@ -51,13 +52,13 @@ export default function SignalCard({ signal }: { signal: any }) {
         <h3 className="text-xl font-semibold text-white leading-tight group-hover:text-indigo-400 transition-colors">
           {signal.title}
         </h3>
-        <p className="text-zinc-400 text-sm leading-relaxed">
-          {signal.summary}
+        <p className={`text-zinc-400 text-sm leading-relaxed ${isRaw ? 'line-clamp-2' : ''}`}>
+          {isRaw ? "This signal has been identified but not yet analyzed for investment insights." : signal.summary}
         </p>
       </div>
 
-      {/* Algorithmic Prediction Panel */}
-      {signal.trade_plan && (
+      {/* Algorithmic Prediction Panel - Hidden for Raw */}
+      {signal.trade_plan && !isRaw && (
         <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-4 flex flex-col md:flex-row gap-4 justify-between items-center z-10 relative overflow-hidden">
           <div className="flex items-center gap-3">
             <div className={`px-4 py-2 rounded-lg font-bold text-lg tracking-wider ${
@@ -96,11 +97,14 @@ export default function SignalCard({ signal }: { signal: any }) {
           signal={signal} 
           showAnalysis={showAnalysis} 
           setShowAnalysis={setShowAnalysis} 
+          isRaw={isRaw}
+          processing={processing}
+          setProcessing={setProcessing}
         />
       </div>
 
-      {/* Analysis & Compliance Dropdown */}
-      {showAnalysis && (
+      {/* Analysis & Compliance Dropdown - Only if not Raw */}
+      {showAnalysis && !isRaw && (
         <div className="pt-4 border-t border-zinc-800/50 mt-2 flex flex-col gap-6 animate-fade-in-up">
           <div className="flex items-center gap-2">
             <span className="text-xl">✨</span>
@@ -137,7 +141,7 @@ export default function SignalCard({ signal }: { signal: any }) {
   );
 }
 
-function ActionButtons({ signal, showAnalysis, setShowAnalysis }: any) {
+function ActionButtons({ signal, showAnalysis, setShowAnalysis, isRaw, processing, setProcessing }: any) {
   const [loading, setLoading] = useState(false);
 
   const handleAction = async (decision: "act" | "dismiss" | "watchlist") => {
@@ -151,6 +155,39 @@ function ActionButtons({ signal, showAnalysis, setShowAnalysis }: any) {
     }
     setLoading(false);
   };
+
+  const handleAnalyze = async () => {
+    setProcessing(true);
+    const success = await analyzeSignal(signal.id);
+    if (success) {
+      alert("Analysis complete! Signal moved to Intelligence section.");
+      window.location.reload();
+    } else {
+      alert("AI Analysis failed. Check Gemini API key.");
+    }
+    setProcessing(false);
+  };
+
+  if (isRaw) {
+    return (
+      <div className="flex gap-2 w-full md:w-auto shrink-0">
+        <button 
+          disabled={processing}
+          onClick={handleAnalyze}
+          className="flex-1 px-4 py-2 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 rounded-lg text-sm font-medium transition-all"
+        >
+          {processing ? '⚡ Processing...' : '✨ Process with Gemini'}
+        </button>
+        <button 
+          disabled={processing}
+          onClick={() => handleAction("dismiss")}
+          className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 rounded-lg text-sm font-medium transition-all border border-zinc-700"
+        >
+          Dismiss
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-2 w-full md:w-auto shrink-0">

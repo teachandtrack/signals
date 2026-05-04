@@ -109,6 +109,21 @@ def get_signal(signal_id: int, db: Session = Depends(get_db), _key: str = Depend
     return schemas.SignalOut.from_orm_with_scores(signal)
 
 
+
+@app.post("/signals/{signal_id}/analyze", tags=["Signals"])
+def analyze_signal_endpoint(
+    signal_id: int,
+    db: Session = Depends(get_db),
+    _key: str = Depends(get_api_key)
+):
+    from scoring.builder import SignalBuilder
+    builder = SignalBuilder(db)
+    success = builder.analyze_signal(signal_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Signal or source not found")
+    return {"status": "success"}
+
+
 @app.post("/signals/{signal_id}/review", response_model=schemas.ReviewOut, tags=["Signals"])
 def review_signal(
     signal_id: int,

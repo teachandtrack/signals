@@ -166,14 +166,18 @@ export default function QueuePage() {
         </div>
       </div>
 
+      {/* Analyzed Signals Section */}
       <div className="space-y-6">
-        {signals.length === 0 ? (
-          <div className="text-center py-20 bg-zinc-900/50 rounded-xl border border-zinc-800/50">
-            <h3 className="text-xl text-zinc-300 font-semibold mb-2">No Signals Found</h3>
-            <p className="text-zinc-500 text-sm">The signal extraction pipeline hasn't processed any documents yet.</p>
+        <div className="flex items-center gap-2 px-1">
+          <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+          <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Analyzed Intelligence</h3>
+        </div>
+        {signals.filter(s => !s.summary?.includes("Analysis skipped")).length === 0 ? (
+          <div className="text-center py-10 bg-zinc-900/30 rounded-xl border border-dashed border-zinc-800">
+            <p className="text-zinc-500 text-sm">No fully analyzed signals yet.</p>
           </div>
         ) : (
-          signals.map((signal, idx) => (
+          signals.filter(s => !s.summary?.includes("Analysis skipped")).map((signal, idx) => (
             <div 
               key={signal.id} 
               className="opacity-0 animate-[fade-in-up_0.5s_ease-out_forwards]"
@@ -183,6 +187,33 @@ export default function QueuePage() {
             </div>
           ))
         )}
+      </div>
+
+      {/* Raw Data Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 px-1 pt-6">
+          <div className="w-2 h-2 rounded-full bg-zinc-600"></div>
+          <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Raw Intelligence Feed</h3>
+        </div>
+        <p className="text-xs text-zinc-500 px-1 -mt-4">Signals awaiting deep-dive analysis. These are processed slowly to maintain API health.</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {signals.filter(s => s.summary?.includes("Analysis skipped")).length === 0 ? (
+            <div className="col-span-full text-center py-10 bg-zinc-900/30 rounded-xl border border-dashed border-zinc-800">
+              <p className="text-zinc-500 text-sm">No raw data in queue.</p>
+            </div>
+          ) : (
+            signals.filter(s => s.summary?.includes("Analysis skipped")).map((signal, idx) => (
+              <div 
+                key={signal.id} 
+                className="opacity-0 animate-[fade-in-up_0.5s_ease-out_forwards]"
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                <SignalCard signal={signal} isRaw={true} />
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
