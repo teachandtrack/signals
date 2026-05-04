@@ -1,5 +1,25 @@
 "use server";
 
+export async function getSignals() {
+  const apiUrl = process.env.API_URL || "http://localhost:10000";
+  const apiKey = process.env.SIGINT_API_KEY;
+
+  try {
+    const res = await fetch(`${apiUrl}/signals/queue`, {
+      headers: {
+        "X-API-Key": apiKey || "",
+      },
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (err) {
+    console.error("Fetch error:", err);
+    return [];
+  }
+}
+
 export async function getWatchlist() {
   const apiUrl = process.env.API_URL || "http://localhost:10000";
   const apiKey = process.env.SIGINT_API_KEY;
