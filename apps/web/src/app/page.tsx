@@ -90,6 +90,8 @@ const MOCK_SIGNALS = [
 
 import MarketPulse from "@/components/MarketPulse";
 
+import { getSignals } from "./actions";
+
 export default function QueuePage() {
   const [signals, setSignals] = useState(MOCK_SIGNALS);
   const [loading, setLoading] = useState(true);
@@ -98,16 +100,11 @@ export default function QueuePage() {
   const fetchSignals = async () => {
     setIsRefreshing(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:10000";
-      const res = await fetch(`${apiUrl}/signals/queue`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.length > 0) {
-          setSignals(data);
-        } else {
-          // Keep mock data visible for demonstration if DB is empty
-          console.log("No real signals found, showing mock data.");
-        }
+      const data = await getSignals();
+      if (data && data.length > 0) {
+        setSignals(data);
+      } else {
+        console.log("No real signals found or fetch failed, showing mock data.");
       }
     } catch (err) {
       console.error("Failed to fetch real signals:", err);

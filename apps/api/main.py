@@ -9,11 +9,26 @@ import schemas
 # Create all tables on startup (migrations handled by Alembic in production)
 models.Base.metadata.create_all(bind=engine)
 
+from fastapi.security import APIKeyHeader
+import os
+
 app = FastAPI(
     title="SigInt API",
     description="Semiconductor Signal Intelligence Platform",
     version="0.1.0",
 )
+
+API_KEY_NAME = "X-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+def get_api_key(api_key: str = Depends(api_key_header)):
+    # In production, use a secure secret. For now, check env.
+    expected_key = os.environ.get("SIGINT_API_KEY")
+    if not expected_key:
+        return # Allow if no key set (dev mode)
+    if api_key != expected_key:
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    return api_key
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,6 +50,7 @@ def health_check():
 def get_signal_queue(
     limit: int = 20,
     db: Session = Depends(get_db),
+    _key: str = Depends(get_api_key)
 ):
     """Return pending signals ordered by total score descending."""
     signals = (
@@ -49,7 +65,7 @@ def get_signal_queue(
 
 
 @app.get("/signals/{signal_id}", response_model=schemas.SignalOut, tags=["Signals"])
-def get_signal(signal_id: int, db: Session = Depends(get_db)):
+def get_signal(signal_id: int, db: Session = Depends(get_db), _key: str = Depends(get_api_key)):
     signal = db.query(models.Signal).filter(models.Signal.id == signal_id).first()
     if not signal:
         raise HTTPException(status_code=404, detail="Signal not found")
@@ -61,6 +77,7 @@ def review_signal(
     signal_id: int,
     review: schemas.ReviewCreate,
     db: Session = Depends(get_db),
+    _key: str = Depends(get_api_key)
 ):
     signal = db.query(models.Signal).filter(models.Signal.id == signal_id).first()
     if not signal:
@@ -81,12 +98,12 @@ def review_signal(
 
 # ── Sources ───────────────────────────────────────────────────────────────────
 @app.get("/sources", response_model=list[schemas.SourceOut], tags=["Sources"])
-def list_sources(db: Session = Depends(get_db)):
+def list_sources(db: Session = Depends(get_db), _key: str = Depends(get_api_key)):
     return db.query(models.Source).filter(models.Source.is_active == True).all()
 
 
 @app.post("/sources", response_model=schemas.SourceOut, tags=["Sources"])
-def create_source(source: schemas.SourceCreate, db: Session = Depends(get_db)):
+def create_source(source: schemas.SourceCreate, db: Session = Depends(get_db), _key: str = Depends(get_api_key)):
     db_source = models.Source(**source.model_dump())
     db.add(db_source)
     db.commit()
@@ -96,7 +113,7 @@ def create_source(source: schemas.SourceCreate, db: Session = Depends(get_db)):
 
 # ── Paper Trades ──────────────────────────────────────────────────────────────
 @app.post("/paper-trades", response_model=schemas.PaperTradeOut, tags=["Portfolio"])
-def create_paper_trade(trade: schemas.PaperTradeCreate, db: Session = Depends(get_db)):
+def create_paper_trade(trade: schemas.PaperTradeCreate, db: Session = Depends(get_db), _key: str = Depends(get_api_key)):
     db_trade = models.PaperTrade(**trade.model_dump())
     db.add(db_trade)
     db.commit()
@@ -105,5 +122,5 @@ def create_paper_trade(trade: schemas.PaperTradeCreate, db: Session = Depends(ge
 
 
 @app.get("/paper-trades", response_model=list[schemas.PaperTradeOut], tags=["Portfolio"])
-def list_paper_trades(is_open: bool = True, db: Session = Depends(get_db)):
+def list_paper_trades(is_open: bool = True, db: Session = Depends(get_db), _key: str = Depends(get_api_key)):
     return db.query(models.PaperTrade).filter(models.PaperTrade.is_open == is_open).all()
