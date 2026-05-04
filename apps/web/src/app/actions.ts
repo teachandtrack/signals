@@ -77,3 +77,26 @@ export async function updateSignalStatus(signalId: number, decision: "act" | "di
     return false;
   }
 }
+import { cookies } from "next/headers";
+
+export async function login(password: string) {
+  const correctPassword = process.env.SIGINT_API_KEY;
+  
+  if (password === correctPassword) {
+    const cookieStore = await cookies();
+    cookieStore.set("sigint_session", "true", {
+      httpOnly: true,
+      secure: process.env.NODE_VALUE === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+    return true;
+  }
+  
+  return false;
+}
+
+export async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete("sigint_session");
+}
