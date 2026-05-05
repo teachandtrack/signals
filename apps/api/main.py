@@ -15,6 +15,7 @@ models.Base.metadata.create_all(bind=engine)
 
 from fastapi.security import APIKeyHeader
 import os
+import yfinance as yf
 
 app = FastAPI(
     title="SigInt API",
@@ -101,6 +102,57 @@ async def startup_event():
     asyncio.create_task(ingestion_worker())
 
 
+
+
+# ── Market Pulse ──────────────────────────────────────────────────────────────
+@app.get("/market/pulse", response_model=list[schemas.MarketPulseItem], tags=["Market"])
+def get_market_pulse(db: Session = Depends(get_db)):
+    """Fetch current prices and 24h changes for tracked semiconductor tickers."""
+    tickers = db.query(models.Ticker).all()
+    if not tickers:
+        # Fallback to some defaults if DB is empty
+        symbols = ["NVDA", "TSM", "AMD", "INTC", "AVGO", "ARM"]
+    else:
+        symbols = [t.symbol for t in tickers]
+    
+    pulse_data = []
+    try:
+        # Fetch data in bulk
+        data = yf.download(symbols, period="1d", interval="1m", progress=False)
+        
+        for symbol in symbols:
+            try:
+                ticker_data = yf.Ticker(symbol)
+                info = ticker_data.fast_info
+                
+                price = info.last_price
+                # Calculate change from yesterday's close
+                prev_close = info.previous_close
+                change_pct = ((price - prev_close) / prev_close) * 100 if prev_close else 0
+                
+                # Find company name
+                name = symbol
+                if tickers:
+                    for t in tickers:
+                        if t.symbol == symbol:
+                            name = t.company.name
+                            break
+                
+                pulse_data.append({
+                    "symbol": symbol,
+                    "name": name,
+                    "price": round(price, 2),
+                    "change": round(change_pct, 2),
+                    "status": "up" if change_pct >= 0 else "down"
+                })
+            except Exception as e:
+                logger.error(f"Error fetching data for {symbol}: {e}")
+                continue
+    except Exception as e:
+        logger.error(f"Bulk fetch error: {e}")
+        # Return empty list or fallback
+    
+    return pulse_data
 
 
 # ── Health ────────────────────────────────────────────────────────────────────

@@ -55,6 +55,29 @@ export async function getWatchlist() {
   }
 }
 
+export async function getMarketPulse() {
+  const cookieStore = await cookies();
+  if (!cookieStore.get("sigint_session")) return [];
+
+  const apiUrl = process.env.API_URL || "http://localhost:10000";
+  const apiKey = process.env.SIGINT_API_KEY;
+
+  try {
+    const res = await fetch(`${apiUrl}/market/pulse`, {
+      headers: {
+        "X-API-Key": apiKey || "",
+      },
+      next: { revalidate: 300 }, // Cache for 5 minutes
+    });
+
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (err) {
+    console.error("Market pulse fetch error:", err);
+    return [];
+  }
+}
+
 export async function analyzeSignal(signalId: number) {
   const cookieStore = await cookies();
   if (!cookieStore.get("sigint_session")) return false;

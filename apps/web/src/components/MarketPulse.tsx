@@ -1,22 +1,46 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { getMarketPulse } from "@/app/actions";
 
 export default function MarketPulse() {
   const [prices, setPrices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, this would fetch from yfinance via our API
-    // For now, let's just use some realistic mock data that updates
-    const initialPrices = [
-      { symbol: "NVDA", name: "NVIDIA", price: 875.20, change: 2.4, status: "up" },
-      { symbol: "TSM", name: "TSMC", price: 142.50, change: -0.8, status: "down" },
-      { symbol: "ASML", name: "ASML", price: 950.00, change: 1.2, status: "up" },
-      { symbol: "AMD", name: "AMD", price: 168.45, change: 0.5, status: "up" },
-      { symbol: "AVGO", name: "Broadcom", price: 1342.10, change: -1.4, status: "down" },
-    ];
-    setPrices(initialPrices);
+    const fetchPrices = async () => {
+      const data = await getMarketPulse();
+      if (data && data.length > 0) {
+        setPrices(data);
+      } else {
+        // Fallback to static if API fails
+        setPrices([
+          { symbol: "NVDA", name: "NVIDIA", price: 875.20, change: 2.4, status: "up" },
+          { symbol: "TSM", name: "TSMC", price: 142.50, change: -0.8, status: "down" },
+          { symbol: "ASML", name: "ASML", price: 950.00, change: 1.2, status: "up" },
+          { symbol: "AMD", name: "AMD", price: 168.45, change: 0.5, status: "up" },
+          { symbol: "AVGO", name: "Broadcom", price: 1342.10, change: -1.4, status: "down" },
+        ]);
+      }
+      setLoading(false);
+    };
+
+    fetchPrices();
+    
+    // Refresh every 5 minutes
+    const interval = setInterval(fetchPrices, 300000);
+    return () => clearInterval(interval);
   }, []);
+
+  if (loading && prices.length === 0) {
+    return (
+      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="glass-panel px-4 py-3 min-w-[180px] h-[52px] animate-pulse bg-white/5" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">

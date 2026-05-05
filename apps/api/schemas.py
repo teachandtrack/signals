@@ -160,6 +160,14 @@ class PaperTradeOut(TimestampSchema):
     is_open: bool
 
 
+# ── Market Pulse ──────────────────────────────────────────────────────────────
+class MarketPulseItem(BaseModel):
+    symbol: str
+    name: str
+    price: float
+    change: float
+    status: str
+
 # ── Health ────────────────────────────────────────────────────────────────────
 class HealthResponse(BaseModel):
     status: str
