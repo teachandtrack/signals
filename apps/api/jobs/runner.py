@@ -65,6 +65,30 @@ def run_slow_analysis():
     finally:
         db.close()
 
+def run_expiry_check():
+    """Mark expired signals as EXPIRED."""
+    logger.info("Starting expiry check at %s", datetime.utcnow().isoformat())
+    db = SessionLocal()
+    try:
+        expired_signals = (
+            db.query(models.Signal)
+            .filter(models.Signal.expires_at < datetime.utcnow())
+            .filter(models.Signal.status == models.SignalStatus.PENDING)
+            .all()
+        )
+        for signal in expired_signals:
+            signal.status = models.SignalStatus.EXPIRED
+        
+        if expired_signals:
+            db.commit()
+            logger.info("Expired %d signals", len(expired_signals))
+        else:
+            logger.info("No signals to expire")
+    except Exception as e:
+        logger.error("Failed to run expiry check: %s", e)
+    finally:
+        db.close()
+
 
 if __name__ == "__main__":
     run_ingestion()
