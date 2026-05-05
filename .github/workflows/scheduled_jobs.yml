@@ -15,6 +15,7 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout code
@@ -29,6 +30,11 @@ jobs:
         run: |
           cd apps/api
           pip install -r requirements.txt
+
+      - name: Seed initial data
+        run: |
+          cd apps/api
+          python jobs/seed_data.py
 
       - name: Run ingestion and signal generation
         run: |
